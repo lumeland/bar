@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Hello, World!</h1>
+    <p>Welcome to my website.</p>
+
+    <lume-bar></lume-bar>
+    <script type="module">
+      import "./lume-bar.js";
+      import { Collection } from "./collection.js";
+
+      const bar = document.querySelector("lume-bar");
+      bar.addCollection(new Collection("Errors"));
+      bar.addCollection(new Collection("Broken links"));
+      bar.addCollection(new Collection("SEO issues"));
+    </script>
+  </body>
+</html>
