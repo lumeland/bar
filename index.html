@@ -12,12 +12,25 @@
     <lume-bar></lume-bar>
     <script type="module">
       import "./lume-bar.js";
-      import { Collection } from "./collection.js";
 
       const bar = document.querySelector("lume-bar");
-      bar.addCollection(new Collection("Errors"));
-      bar.addCollection(new Collection("Broken links"));
-      bar.addCollection(new Collection("SEO issues"));
+
+      bar.addCollection({
+        name: "Messages",
+        icon: "info",
+        items: [
+          {
+            badge: "info",
+            text: "This is the message title",
+            code: "code",
+          },
+          {
+            badge: "error:important",
+            text: "This is the second message",
+            details: "lorem ipsum dolor",
+          },
+        ],
+      });
     </script>
   </body>
 </html>
