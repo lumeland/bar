@@ -19,15 +19,18 @@ class LumeBar extends HTMLElement {
           --font-family-code: Consolas, Menlo, Monaco, monospace;
           --font-family-ui: system-ui, sans-serif;
 
+          position: fixed;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 100;
+          width: min(1200px, 100% - 2rem);
+        }
+        .bar {
           background-color: var(--color-background);
           color: var(--color-text);
           box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-          position: fixed;
-          bottom: 0;
-          left: 16px;
-          right: 16px;
           box-sizing: border-box;
-          z-index: 100;
           font-family: var(--font-family-ui);
           font-size: 14px;
           border-radius: 6px 6px 0 0;
@@ -63,6 +66,11 @@ class LumeBar extends HTMLElement {
               border-bottom-color: var(--color-highlight);
             }
           }
+          .toggle {
+            order: 1;
+            margin-left: auto;
+            border: none;
+          }
         }
         .details {
           max-height: 200px;
@@ -75,14 +83,49 @@ class LumeBar extends HTMLElement {
             display: none;
           }
         }
+        .bar.is-closed {
+          width: min-content;
+          .details {
+            display: none;
+          }
+          .menu > :not(.toggle) {
+            display: none;
+          }
+        }
+        
       </style>
-      <div class="menu"></div>
-      <div class="details"></div>
+      <div class="bar">
+        <div class="menu"></div>
+        <div class="details"></div>
+      </div>
     `;
-    this.menu = this.shadowRoot.querySelector(".menu");
-    this.details = this.shadowRoot.querySelector(".details");
+    this.bar = this.shadowRoot.querySelector(".bar");
+    this.menu = this.bar.querySelector(".menu");
+    this.details = this.bar.querySelector(".details");
     this.collections = [];
     this.state = new State();
+
+    const toggleButton = dom("button", {
+      class: "toggle",
+      text: "Toggle",
+      onclick: () => this.state.get("closed") ? this.open() : this.close(),
+    });
+
+    this.menu.appendChild(toggleButton);
+
+    if (this.state.get("closed")) {
+      this.close();
+    }
+  }
+
+  close() {
+    this.state.set("closed", true);
+    this.bar.classList.add("is-closed");
+  }
+
+  open() {
+    this.state.remove("closed");
+    this.bar.classList.remove("is-closed");
   }
 
   addCollection(collection) {

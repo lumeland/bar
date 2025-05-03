@@ -17,6 +17,7 @@ export default class State {
 
   remove(key) {
     delete this.state[key];
+    this.save();
   }
 
   clear() {
