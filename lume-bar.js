@@ -141,13 +141,20 @@ class LumeBar extends HTMLElement {
           --background: var(--color-dim);
           --color: var(--color-background);
 
-          display: inline-block;
+          display: flex;
+          align-items: center;
           background-color: var(--background);
           color: var(--color);
-          padding: 2px 4px;
-          border-radius: 4px;
+          gap: 4px;
+          height: 20px;
+          min-width: 20px;
+          box-sizing: border-box;
+          justify-content: center;
+          padding: 0 6px;
+          white-space: nowrap;
+          border-radius: 10px;
           text-transform: uppercase;
-          font-size: .85em;
+          font-size: 12px;
           font-weight: 500;
         }
         .item {
@@ -175,8 +182,8 @@ class LumeBar extends HTMLElement {
           column-gap: var(--gap);
 
           svg {
-            width: 1em;
-            height: 1em;
+            width: 16px;
+            height: 16px;
           }
         }
         summary.item-title {
@@ -351,7 +358,7 @@ async function renderItemCollection(item, contexts) {
         dom("summary", {
           class: "item-title",
           html: [
-            renderContext(item, contexts),
+            await renderContext(item, contexts),
             item.title,
           ],
         }),
@@ -381,7 +388,7 @@ async function renderItemCollection(item, contexts) {
     dom("p", {
       class: "item-title",
       html: [
-        renderContext(item, contexts),
+        await renderContext(item, contexts),
         item.title,
       ],
     }, li);
@@ -417,7 +424,7 @@ const colors = new Map([
   ["important", "var(--color-important)"],
 ]);
 
-function renderContext(item, contexts) {
+async function renderContext(item, contexts) {
   if (!item.context) {
     return "";
   }
@@ -436,6 +443,9 @@ function renderContext(item, contexts) {
       ? colors.get(background) ?? background
       : "var(--color-dim)",
     "--color": color ? colors.get(color) ?? color : "var(--color-background)",
-    html: item.context,
+    html: [
+      context.icon ? await icon(context.icon) : "",
+      item.context,
+    ],
   });
 }

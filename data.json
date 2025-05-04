@@ -5,7 +5,8 @@
       "icon": "info",
       "contexts": {
         "info": {
-          "background": "info"
+          "background": "info",
+          "icon": "info"
         },
         "error": {
           "background": "error"
