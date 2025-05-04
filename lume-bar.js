@@ -114,6 +114,9 @@ class LumeBar extends HTMLElement {
 
   async update(data) {
     this.collections = [];
+    this.menu.querySelectorAll(":scope > button:not(.toggle)")
+      .forEach((btn) => btn.remove());
+    this.details.innerHTML = "";
 
     if (!data.collections) {
       console.error(`Invalid data format: ${src}`);
