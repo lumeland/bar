@@ -26,7 +26,25 @@
             {
               "context": "info",
               "title": "This is the message title",
-              "code": "code"
+              "code": "code",
+              "items": [
+                {
+                  "id": "fi12",
+                  "context": "info",
+                  "title": "This is the message title",
+                  "code": "code"
+                },
+                {
+                  "title": "This page is editable",
+                  "details": "2.4s",
+                  "actions": [
+                    {
+                      "text": "Edit",
+                      "href": "https://lume.land"
+                    }
+                  ]
+                }
+              ]
             },
             {
               "title": "This page is editable",

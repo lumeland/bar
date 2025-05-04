@@ -114,8 +114,10 @@ class LumeBar extends HTMLElement {
           }
         }
         .details {
-          max-height: 200px;
+          max-height: max(200px, 50vh);
           overflow-y: auto;
+          scrollbar-width: thin;
+          scrollbar-color: var(--color-line) transparent;
           border-top: solid 1px var(--color-line);
           background-color: var(--color-highlight);
 
@@ -133,6 +135,12 @@ class LumeBar extends HTMLElement {
           > li:has(> details[open]) {
             outline: solid 1px var(--color-line);
             background-color: var(--color-background);
+          }
+
+          .collection {
+            margin-top: 0;
+            border-left: solid 2px var(--color-context, var(--color-dim));
+            padding-left: var(--gap);
           }
         }
         .badge {
@@ -159,7 +167,7 @@ class LumeBar extends HTMLElement {
           display: flex;
           column-gap: var(--gap);
           align-items: center;
-          padding: 2px var(--gap);
+          padding: 0 var(--gap);
 
           > :first-child {
             flex: 1 1 auto;
@@ -178,6 +186,8 @@ class LumeBar extends HTMLElement {
           display: flex;
           align-items: center;
           column-gap: var(--gap);
+          min-height: 40px;
+          box-sizing: border-box;
 
           svg {
             width: 16px;
@@ -199,6 +209,7 @@ class LumeBar extends HTMLElement {
           display: flex;
           flex-wrap: wrap;
           gap: var(--gap);
+          padding: 4px 0;
         }
         .item-action {
           color: var(--color-text);
@@ -310,120 +321,154 @@ class LumeBar extends HTMLElement {
           ? ` <span class="badge">${collection.items.length}</span>`
           : "",
       ],
-      onclick: async () => {
-        const pressed = button.getAttribute("aria-pressed") === "true";
+    });
 
-        if (pressed) {
-          button.removeAttribute("aria-pressed");
-          this.details.innerHTML = "";
-          this.state.remove("active_collection");
-        } else {
-          this.menu.querySelectorAll("button").forEach((btn) =>
-            button !== btn && btn.removeAttribute("aria-pressed")
-          );
-          button.setAttribute("aria-pressed", "true");
-          this.details.innerHTML = "";
-          dom("ul", {
-            class: "collection",
-            html: await Promise.all(
-              collection.items.map((c) =>
-                renderItemCollection(c, collection.contexts)
-              ),
+    const onclick = async () => {
+      const pressed = button.getAttribute("aria-pressed") === "true";
+
+      if (pressed) {
+        button.removeAttribute("aria-pressed");
+        this.details.innerHTML = "";
+        this.state.remove("active_collection");
+      } else {
+        this.menu.querySelectorAll("button").forEach((btn) =>
+          button !== btn && btn.removeAttribute("aria-pressed")
+        );
+        button.setAttribute("aria-pressed", "true");
+        this.details.innerHTML = "";
+        dom("ul", {
+          class: "collection",
+          html: await Promise.all(
+            collection.items.map((c) =>
+              this.renderItemCollection(c, collection.contexts)
             ),
-          }, this.details);
-          this.state.set("active_collection", collection.name);
-        }
-      },
+          ),
+        }, this.details);
+        this.state.set("active_collection", collection.name);
+      }
+    };
+
+    button.addEventListener("click", () => {
+      this.state.remove("open_item");
+      onclick();
     });
 
     this.menu.appendChild(button);
 
     if (this.state.get("active_collection") === collection.name) {
-      button.click();
+      await onclick();
+      const openItem = this.state.get("open_item");
+
+      if (openItem) {
+        let item = this.details.querySelector(`#${openItem}`)?.closest(
+          "details",
+        );
+        const items = [];
+
+        while (item) {
+          items.push(item);
+          item = item.parentElement.closest("details");
+        }
+
+        items.reverse().forEach((item) => item.open = true);
+      }
     }
+  }
+
+  async renderItemCollection(item, contexts) {
+    const li = dom("li", {
+      class: "item",
+      "--color-context": item.context
+        ? getColor(contexts[item.context]?.background, "var(--color-dim)")
+        : undefined,
+    });
+
+    if (item.text || item.code || item.items?.length) {
+      dom("details", {
+        id: item.id ? `item-${item.id}` : undefined,
+        ontoggle: (e) => {
+          const id = e.target.closest("[id]")?.id;
+
+          if (id) {
+            this.state.set("open_item", id);
+          } else {
+            this.state.remove("open_item");
+          }
+        },
+        html: [
+          dom("summary", {
+            class: "item-title",
+            html: [
+              await renderContext(item, contexts),
+              item.title,
+              item.items?.length
+                ? ` <span class="badge">${item.items.length}</span>`
+                : "",
+            ],
+          }),
+          item.text
+            ? dom("div", {
+              class: "item-text",
+              html: item.text,
+            })
+            : "",
+          item.code
+            ? dom("pre", {
+              class: "item-text",
+              html: item.code,
+            })
+            : "",
+          item.items?.length
+            ? dom("ul", {
+              class: "collection",
+              html: await Promise.all(
+                item.items.map((c) => this.renderItemCollection(c, contexts)),
+              ),
+            })
+            : "",
+        ],
+      }, li);
+    } else {
+      dom("p", {
+        class: "item-title",
+        html: [
+          await renderContext(item, contexts),
+          item.title,
+        ],
+      }, li);
+    }
+
+    if (item.details) {
+      dom("span", {
+        class: "item-details",
+        html: item.details,
+      }, li);
+    }
+
+    if (item.actions) {
+      const actions = dom("div", {
+        class: "item-actions",
+        html: await Promise.all(item.actions.map(async (action) =>
+          dom("a", {
+            class: "item-action",
+            html: [
+              action.icon ? await icon(action.icon) : "",
+              action.text,
+            ],
+            href: action.href,
+            target: action.target,
+          })
+        )),
+      });
+
+      li.appendChild(actions);
+    }
+
+    return li;
   }
 }
 
 customElements.define("lume-bar", LumeBar);
-
-async function renderItemCollection(item, contexts) {
-  const li = dom("li", {
-    class: "item",
-  });
-
-  if (item.text || item.code || item.items?.length) {
-    dom("details", {
-      html: [
-        dom("summary", {
-          class: "item-title",
-          html: [
-            await renderContext(item, contexts),
-            item.title,
-            item.items?.length
-              ? ` <span class="badge">${item.items.length}</span>`
-              : "",
-          ],
-        }),
-        item.text
-          ? dom("div", {
-            class: "item-text",
-            html: item.text,
-          })
-          : "",
-        item.code
-          ? dom("pre", {
-            class: "item-text",
-            html: item.code,
-          })
-          : "",
-        item.items?.length
-          ? dom("ul", {
-            class: "collection",
-            html: await Promise.all(
-              item.items.map((c) => renderItemCollection(c, contexts)),
-            ),
-          })
-          : "",
-      ],
-    }, li);
-  } else {
-    dom("p", {
-      class: "item-title",
-      html: [
-        await renderContext(item, contexts),
-        item.title,
-      ],
-    }, li);
-  }
-
-  if (item.details) {
-    dom("span", {
-      class: "item-details",
-      html: item.details,
-    }, li);
-  }
-
-  if (item.actions) {
-    const actions = dom("div", {
-      class: "item-actions",
-      html: await Promise.all(item.actions.map(async (action) =>
-        dom("a", {
-          class: "item-action",
-          html: [
-            action.icon ? await icon(action.icon) : "",
-            action.text,
-          ],
-          href: action.href,
-          target: action.target,
-        })
-      )),
-    });
-
-    li.appendChild(actions);
-  }
-
-  return li;
-}
 
 const colors = new Map([
   ["error", "var(--color-error)"],
@@ -451,10 +496,13 @@ async function renderContext(item, contexts) {
     "--background": background
       ? colors.get(background) ?? background
       : "var(--color-dim)",
-    "--color": color ? colors.get(color) ?? color : "var(--color-background)",
+    "--color": getColor(color, "var(--color-background)"),
     html: [
       context.icon ? await icon(context.icon) : "",
       item.context,
     ],
   });
+}
+function getColor(color, defaultColor) {
+  return color ? colors.get(color) ?? color : defaultColor;
 }
