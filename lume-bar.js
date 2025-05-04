@@ -128,8 +128,6 @@ class LumeBar extends HTMLElement {
           list-style-type: none;
           margin: var(--gap) 0;
           padding: 0;
-          display: grid;
-          row-gap: 4px;
 
           > li:hover:has(details),
           > li:has(> details[open]) {
@@ -161,7 +159,7 @@ class LumeBar extends HTMLElement {
           display: flex;
           column-gap: var(--gap);
           align-items: center;
-          padding: 0 var(--gap);
+          padding: 2px var(--gap);
 
           > :first-child {
             flex: 1 1 auto;
@@ -193,7 +191,7 @@ class LumeBar extends HTMLElement {
             color: var(--color-base);
           }
         }
-        .item-details {
+        .item-text {
           padding-bottom: var(--gap);
           margin: 0;
         }
@@ -222,6 +220,7 @@ class LumeBar extends HTMLElement {
           &:hover {
             background-color: var(--color-highlight);
             color: var(--color-base);
+            border-color: var(--color-dim);
           }
         }
       </style>
@@ -352,7 +351,7 @@ async function renderItemCollection(item, contexts) {
     class: "item",
   });
 
-  if (item.details || item.code || item.items?.length) {
+  if (item.text || item.code || item.items?.length) {
     dom("details", {
       html: [
         dom("summary", {
@@ -365,15 +364,15 @@ async function renderItemCollection(item, contexts) {
               : "",
           ],
         }),
-        item.details
+        item.text
           ? dom("div", {
-            class: "item-details",
-            html: item.details,
+            class: "item-text",
+            html: item.text,
           })
           : "",
         item.code
           ? dom("pre", {
-            class: "item-details",
+            class: "item-text",
             html: item.code,
           })
           : "",
@@ -394,6 +393,13 @@ async function renderItemCollection(item, contexts) {
         await renderContext(item, contexts),
         item.title,
       ],
+    }, li);
+  }
+
+  if (item.details) {
+    dom("span", {
+      class: "item-details",
+      html: item.details,
     }, li);
   }
 

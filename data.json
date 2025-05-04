@@ -16,7 +16,8 @@
         {
           "context": "info",
           "title": "This is the message title",
-          "code": "code"
+          "code": "code",
+          "details": "2.4s"
         },
         {
           "context": "error",
@@ -29,6 +30,7 @@
             },
             {
               "title": "This page is editable",
+              "details": "2.4s",
               "actions": [
                 {
                   "text": "Edit",
@@ -46,6 +48,7 @@
       "items": [
         {
           "title": "This page is editable",
+          "text": "Pois eso, que é editable, <em>hostia</em>",
           "actions": [
             {
               "text": "Edit",
