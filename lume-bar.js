@@ -24,34 +24,62 @@ class LumeBar extends HTMLElement {
 
           --font-family-code: Consolas, Menlo, Monaco, monospace;
           --font-family-ui: system-ui, sans-serif;
+          --border-radius: 6px;
+          --gap: 8px;
 
           position: fixed;
           bottom: 0;
           left: 50%;
           transform: translateX(-50%);
           z-index: 100;
-          width: min(1200px, 100% - 2rem);
+          width: min(1200px, 100% - 40px);
+
+          @media (max-width: 600px) {
+            width: min(600px - 40px, 100%)
+          }
         }
         .bar {
           background-color: var(--color-background);
           color: var(--color-text);
-          box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 0 0 1px black, 0 -1px 20px rgba(255, 255, 255, 0.1);
           box-sizing: border-box;
           font-family: var(--font-family-ui);
           font-size: 14px;
-          border-radius: 6px 6px 0 0;
+          border-radius: var(--border-radius) var(--border-radius) 0 0;
           overflow: hidden;
+
+          @media (max-width: 560px) {
+            border-radius: 0;
+          }
+
+          &.is-closed {
+            width: min-content;
+
+            @media (max-width: 560px) {
+              border-radius: 0 var(--border-radius) 0 0;
+            }
+
+            .details {
+              display: none;
+            }
+
+            .menu > :not(.toggle) {
+              display: none;
+            }
+          }
         }
         .menu {
           display: flex;
           overflow-x: auto;
           margin-bottom: -1px;
           z-index: 1;
+          scrollbar-width: thin;
+          scrollbar-color: var(--color-line) transparent;
 
           button {
             display: flex;
             align-items: center;
-            column-gap: .5rem;
+            column-gap: var(--gap);
             background: none;
             border: none;
             border-right: solid 1px var(--color-line);
@@ -61,6 +89,7 @@ class LumeBar extends HTMLElement {
             cursor: pointer;
             font: inherit;
             color: var(--color-dim);
+            white-space: nowrap;
 
             &:hover {
               color: var(--color-base);
@@ -87,7 +116,6 @@ class LumeBar extends HTMLElement {
         .details {
           max-height: 200px;
           overflow-y: auto;
-          padding: 10px;
           border-top: solid 1px var(--color-line);
           background-color: var(--color-highlight);
 
@@ -95,22 +123,18 @@ class LumeBar extends HTMLElement {
             display: none;
           }
         }
-        .bar.is-closed {
-          width: min-content;
-          .details {
-            display: none;
-          }
-          .menu > :not(.toggle) {
-            display: none;
-          }
-        }
+
         .collection {
           list-style-type: none;
-          margin: 0;
+          margin: var(--gap) 0;
           padding: 0;
+          display: grid;
+          row-gap: 4px;
 
-          > li + li {
-            border-top: solid 1px var(--color-line);
+          > li:hover:has(details),
+          > li:has(> details[open]) {
+            outline: solid 1px var(--color-line);
+            background-color: var(--color-background);
           }
         }
         .badge {
@@ -123,25 +147,39 @@ class LumeBar extends HTMLElement {
           padding: 2px 4px;
           border-radius: 4px;
           text-transform: uppercase;
-          font-size: 12px;
+          font-size: .85em;
           font-weight: 500;
+        }
+        .item {
+          display: flex;
+          column-gap: var(--gap);
+          align-items: center;
+          padding: 0 var(--gap);
+
+          > :first-child {
+            flex: 1 1 auto;
+          }
+          .item {
+            border-radius: var(--border-radius);
+            padding-right: 0;
+          }
         }
         .item.is-code {
           font-family: var(--font-family-code);
         }
-        .item-text {
-          padding: 10px 0;
+        .item-title {
+          padding: var(--gap) 0;
           margin: 0;
           display: flex;
           align-items: center;
-          column-gap: 16px;
+          column-gap: var(--gap);
 
           svg {
             width: 1em;
             height: 1em;
           }
         }
-        summary.item-text {
+        summary.item-title {
           list-style: none;
           cursor: pointer;
           &:hover {
@@ -149,8 +187,35 @@ class LumeBar extends HTMLElement {
           }
         }
         .item-details {
-          padding-bottom: 10px;
+          padding-bottom: var(--gap);
           margin: 0;
+        }
+        .item-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--gap);
+        }
+        .item-action {
+          color: var(--color-text);
+          text-decoration: none;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          column-gap: var(--gap);
+          padding: 0 var(--gap);
+          border-radius: var(--border-radius);
+          border: solid 1px var(--color-line);
+          background-color: var(--color-background);
+
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+
+          &:hover {
+            background-color: var(--color-highlight);
+            color: var(--color-base);
+          }
         }
       </style>
 
@@ -193,6 +258,26 @@ class LumeBar extends HTMLElement {
     if (this.state.get("closed")) {
       this.close();
     }
+    const src = this.getAttribute("src");
+    if (!src) {
+      return;
+    }
+
+    const response = await fetch(src);
+    if (!response.ok) {
+      console.error(`Failed to load ${src}: ${response.statusText}`);
+      return;
+    }
+    const data = await response.json();
+
+    if (!data.collections) {
+      console.error(`Invalid data format: ${src}`);
+      return;
+    }
+
+    for (const collection of data.collections) {
+      await this.addCollection(collection);
+    }
   }
 
   close() {
@@ -231,9 +316,14 @@ class LumeBar extends HTMLElement {
             button !== btn && btn.removeAttribute("aria-pressed")
           );
           button.setAttribute("aria-pressed", "true");
+          this.details.innerHTML = "";
           dom("ul", {
             class: "collection",
-            html: await Promise.all(collection.items.map(renderItemCollection)),
+            html: await Promise.all(
+              collection.items.map((c) =>
+                renderItemCollection(c, collection.contexts)
+              ),
+            ),
           }, this.details);
           this.state.set("active_collection", collection.name);
         }
@@ -250,19 +340,19 @@ class LumeBar extends HTMLElement {
 
 customElements.define("lume-bar", LumeBar);
 
-async function renderItemCollection(item) {
+async function renderItemCollection(item, contexts) {
   const li = dom("li", {
     class: "item",
   });
 
-  if (item.details || item.code) {
+  if (item.details || item.code || item.items?.length) {
     dom("details", {
       html: [
         dom("summary", {
-          class: "item-text",
+          class: "item-title",
           html: [
-            renderBadge(item.badge),
-            item.text,
+            renderContext(item, contexts),
+            item.title,
           ],
         }),
         item.details
@@ -277,30 +367,75 @@ async function renderItemCollection(item) {
             html: item.code,
           })
           : "",
+        item.items?.length
+          ? dom("ul", {
+            class: "collection",
+            html: await Promise.all(
+              item.items.map((c) => renderItemCollection(c, contexts)),
+            ),
+          })
+          : "",
       ],
     }, li);
   } else {
     dom("p", {
-      class: "item-text",
+      class: "item-title",
       html: [
-        renderBadge(item.badge),
-        item.text,
+        renderContext(item, contexts),
+        item.title,
       ],
     }, li);
+  }
+
+  if (item.actions) {
+    const actions = dom("div", {
+      class: "item-actions",
+      html: await Promise.all(item.actions.map(async (action) =>
+        dom("a", {
+          class: "item-action",
+          html: [
+            action.icon ? await icon(action.icon) : "",
+            action.text,
+          ],
+          href: action.href,
+          target: action.target,
+        })
+      )),
+    });
+
+    li.appendChild(actions);
   }
 
   return li;
 }
 
-function renderBadge(badge) {
-  if (!badge) {
+const colors = new Map([
+  ["error", "var(--color-error)"],
+  ["warning", "var(--color-warning)"],
+  ["success", "var(--color-success)"],
+  ["info", "var(--color-info)"],
+  ["important", "var(--color-important)"],
+]);
+
+function renderContext(item, contexts) {
+  if (!item.context) {
     return "";
   }
-  const [text, color] = badge.split(":").map((s) => s.trim());
+
+  const context = contexts[item.context];
+  if (!context) {
+    console.error(`Context not found: ${item.context}`);
+    return "";
+  }
+
+  const { color, background } = context;
+
   return dom("span", {
     class: "badge",
-    "--background": `var(--color-${color}, var(--color-dim))`,
-    "--color": "var(--color-background)",
-    html: text,
+    "--background": background
+      ? colors.get(background) ?? background
+      : "var(--color-dim)",
+    "--color": color ? colors.get(color) ?? color : "var(--color-background)",
+    html: item.context,
   });
 }

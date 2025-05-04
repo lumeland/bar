@@ -9,28 +9,10 @@
     <h1>Hello, World!</h1>
     <p>Welcome to my website.</p>
 
-    <lume-bar></lume-bar>
+    <lume-bar src="./data.json"></lume-bar>
+
     <script type="module">
       import "./lume-bar.js";
-
-      const bar = document.querySelector("lume-bar");
-
-      bar.addCollection({
-        name: "Messages",
-        icon: "info",
-        items: [
-          {
-            badge: "info",
-            text: "This is the message title",
-            code: "code",
-          },
-          {
-            badge: "error:important",
-            text: "This is the second message",
-            details: "lorem ipsum dolor",
-          },
-        ],
-      });
     </script>
   </body>
 </html>

@@ -1,0 +1,59 @@
+{
+  "collections": [
+    {
+      "name": "Messages",
+      "icon": "info",
+      "contexts": {
+        "info": {
+          "background": "info"
+        },
+        "error": {
+          "background": "error"
+        }
+      },
+      "items": [
+        {
+          "context": "info",
+          "title": "This is the message title",
+          "code": "code"
+        },
+        {
+          "context": "error",
+          "title": "This is the second message",
+          "items": [
+            {
+              "context": "info",
+              "title": "This is the message title",
+              "code": "code"
+            },
+            {
+              "title": "This page is editable",
+              "actions": [
+                {
+                  "text": "Edit",
+                  "href": "https://lume.land"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LumeCMS",
+      "icon": "warning",
+      "items": [
+        {
+          "title": "This page is editable",
+          "actions": [
+            {
+              "text": "Edit",
+              "href": "https://lume.land",
+              "icon": "pencil-simple"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
