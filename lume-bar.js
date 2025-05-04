@@ -119,7 +119,6 @@ class LumeBar extends HTMLElement {
     this.details.innerHTML = "";
 
     if (!data.collections) {
-      console.error(`Invalid data format: ${src}`);
       return;
     }
 
@@ -210,7 +209,7 @@ class LumeBar extends HTMLElement {
     const li = dom("li", {
       class: "item",
       "--color-context": item.context
-        ? getColor(contexts[item.context]?.background, "var(--color-dim)")
+        ? getColor(contexts?.[item.context]?.background, "var(--color-dim)")
         : undefined,
     });
 
@@ -220,7 +219,7 @@ class LumeBar extends HTMLElement {
       const id = await getId(...ids);
       dom("details", {
         id,
-        ontoggle: (e) => {
+        ontoggle: () => {
           if (id) {
             this.state.set("open_item", id);
           } else {
@@ -309,7 +308,7 @@ async function renderContext(item, contexts) {
     return "";
   }
 
-  const context = contexts[item.context];
+  const context = contexts?.[item.context];
   if (!context) {
     console.error(`Context not found: ${item.context}`);
     return "";
