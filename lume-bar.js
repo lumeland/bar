@@ -1,240 +1,64 @@
-import { dom, icon, icons } from "./deps.js";
-import State from "./state.js";
+import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.5/dom.js";
 
+// Cache for icons to avoid fetching them multiple times
+const cache = new Map();
+
+// Default colors for different contexts
+const colors = new Map([
+  ["error", "var(--color-error)"],
+  ["warning", "var(--color-warning)"],
+  ["success", "var(--color-success)"],
+  ["info", "var(--color-info)"],
+  ["important", "var(--color-important)"],
+]);
+
+/**
+ * Class to manage the state of the LumeBar component.
+ * It uses localStorage to persist the state across page reloads.
+ */
+class State {
+  key = "lume-bar";
+
+  constructor() {
+    const restore = localStorage.getItem(this.key);
+    this.state = restore ? JSON.parse(restore) : {};
+  }
+
+  set(key, value) {
+    this.state[key] = value;
+    this.save();
+  }
+
+  get(key) {
+    return this.state[key];
+  }
+
+  remove(key) {
+    delete this.state[key];
+    this.save();
+  }
+
+  clear() {
+    this.state = {};
+    localStorage.removeItem(this.key);
+  }
+
+  save() {
+    localStorage.setItem(this.key, JSON.stringify(this.state));
+  }
+}
+
+/**
+ * LumeBar class to create a sidebar component.
+ * It fetches data from a JSON file and displays it in a structured format.
+ */
 class LumeBar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+    const styles = import.meta.resolve("./styles.css");
     this.shadowRoot.innerHTML = `
-      <style>
-        :host {
-          --color-base: hsl(220, 20%, 100%);
-          --color-text: hsl(220, 20%, 70%);
-          --color-dim: hsl(220, 20%, 55%);
-          --color-line: hsl(220, 20%, 20%);
-          --color-background: hsl(220, 20%, 10%);
-          --color-highlight: hsl(220, 20%, 13%);
-          --color-primary: hsl(0, 88%, 65%);
-
-          --color-error: hsl(0, 100%, 70%);
-          --color-warning: hsl(50, 80%, 50%);
-          --color-success: hsl(140, 70%, 60%);
-          --color-info: hsl(210, 80%, 70%);
-          --color-important: hsl(300, 60%, 60%);
-
-          --font-family-code: Consolas, Menlo, Monaco, monospace;
-          --font-family-ui: system-ui, sans-serif;
-          --border-radius: 6px;
-          --gap: 8px;
-
-          position: fixed;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 100;
-          width: min(1200px, 100% - 40px);
-
-          @media (max-width: 600px) {
-            width: min(600px - 40px, 100%)
-          }
-        }
-        .bar {
-          background-color: var(--color-background);
-          color: var(--color-text);
-          box-shadow: 0 0 0 1px black, 0 -1px 20px rgba(255, 255, 255, 0.1);
-          box-sizing: border-box;
-          font-family: var(--font-family-ui);
-          font-size: 14px;
-          border-radius: var(--border-radius) var(--border-radius) 0 0;
-          overflow: hidden;
-
-          @media (max-width: 560px) {
-            border-radius: 0;
-          }
-
-          &.is-closed {
-            width: min-content;
-
-            @media (max-width: 560px) {
-              border-radius: 0 var(--border-radius) 0 0;
-            }
-
-            .details {
-              display: none;
-            }
-
-            .menu > :not(.toggle) {
-              display: none;
-            }
-          }
-        }
-        .menu {
-          display: flex;
-          overflow-x: auto;
-          margin-bottom: -1px;
-          z-index: 1;
-          scrollbar-width: thin;
-          scrollbar-color: var(--color-line) transparent;
-
-          button {
-            display: flex;
-            align-items: center;
-            column-gap: var(--gap);
-            background: none;
-            border: none;
-            border-right: solid 1px var(--color-line);
-            border-bottom: solid 1px transparent;
-            height: 40px;
-            padding: 0 .8em;
-            cursor: pointer;
-            font: inherit;
-            color: var(--color-dim);
-            white-space: nowrap;
-
-            &:hover {
-              color: var(--color-base);
-            }
-
-            &[aria-pressed="true"] {
-              color: var(--color-base);
-              background-color: var(--color-highlight);
-              border-bottom-color: var(--color-highlight);
-            }
-            
-            svg {
-              fill: currentColor;
-              width: 20px;
-              height: 20px;
-            }
-          }
-          .toggle {
-            order: 1;
-            margin-left: auto;
-            border: none;
-          }
-        }
-        .details {
-          max-height: max(200px, 50vh);
-          overflow-y: auto;
-          scrollbar-width: thin;
-          scrollbar-color: var(--color-line) transparent;
-          border-top: solid 1px var(--color-line);
-          background-color: var(--color-highlight);
-
-          &:empty {
-            display: none;
-          }
-        }
-
-        .collection {
-          list-style-type: none;
-          margin: var(--gap) 0;
-          padding: 0;
-
-          > li:hover:has(details),
-          > li:has(> details[open]) {
-            outline: solid 1px var(--color-line);
-            background-color: var(--color-background);
-          }
-
-          .collection {
-            margin-top: 0;
-            border-left: solid 2px var(--color-context, var(--color-dim));
-            padding-left: var(--gap);
-          }
-        }
-        .badge {
-          --background: var(--color-dim);
-          --color: var(--color-background);
-
-          display: flex;
-          align-items: center;
-          background-color: var(--background);
-          color: var(--color);
-          gap: 4px;
-          height: 20px;
-          min-width: 20px;
-          box-sizing: border-box;
-          justify-content: center;
-          padding: 0 6px;
-          white-space: nowrap;
-          border-radius: 10px;
-          text-transform: uppercase;
-          font-size: 12px;
-          font-weight: 500;
-        }
-        .item {
-          display: flex;
-          column-gap: var(--gap);
-          align-items: center;
-          padding: 0 var(--gap);
-
-          > :first-child {
-            flex: 1 1 auto;
-          }
-          .item {
-            border-radius: var(--border-radius);
-            padding-right: 0;
-          }
-        }
-        .item.is-code {
-          font-family: var(--font-family-code);
-        }
-        .item-title {
-          padding: var(--gap) 0;
-          margin: 0;
-          display: flex;
-          align-items: center;
-          column-gap: var(--gap);
-          min-height: 40px;
-          box-sizing: border-box;
-
-          svg {
-            width: 16px;
-            height: 16px;
-          }
-        }
-        summary.item-title {
-          list-style: none;
-          cursor: pointer;
-          &:hover {
-            color: var(--color-base);
-          }
-        }
-        .item-text {
-          padding-bottom: var(--gap);
-          margin: 0;
-        }
-        .item-actions {
-          display: flex;
-          flex-wrap: wrap;
-          gap: var(--gap);
-          padding: 4px 0;
-        }
-        .item-action {
-          color: var(--color-text);
-          text-decoration: none;
-          height: 32px;
-          display: flex;
-          align-items: center;
-          column-gap: var(--gap);
-          padding: 0 var(--gap);
-          border-radius: var(--border-radius);
-          border: solid 1px var(--color-line);
-          background-color: var(--color-background);
-
-          svg {
-            width: 16px;
-            height: 16px;
-          }
-
-          &:hover {
-            background-color: var(--color-highlight);
-            color: var(--color-base);
-            border-color: var(--color-dim);
-          }
-        }
-      </style>
+      <link rel="stylesheet" href="${styles}">
 
       <div class="bar">
         <div class="menu"></div>
@@ -246,15 +70,13 @@ class LumeBar extends HTMLElement {
     this.details = this.bar.querySelector(".details");
     this.collections = [];
     this.state = new State();
-
-    this.init();
   }
 
-  async init() {
-    const [iconIn, iconOut] = await icons(
-      "arrows-in-simple",
-      "arrows-out-simple",
-    );
+  async connectedCallback() {
+    const [iconIn, iconOut] = await Promise.all([
+      icon("arrows-in-simple"),
+      icon("arrows-out-simple"),
+    ]);
 
     const toggleButton = dom("button", {
       class: "toggle",
@@ -285,7 +107,13 @@ class LumeBar extends HTMLElement {
       console.error(`Failed to load ${src}: ${response.statusText}`);
       return;
     }
+
     const data = await response.json();
+    this.update(data);
+  }
+
+  async update(data) {
+    this.collections = [];
 
     if (!data.collections) {
       console.error(`Invalid data format: ${src}`);
@@ -339,9 +167,7 @@ class LumeBar extends HTMLElement {
         dom("ul", {
           class: "collection",
           html: await Promise.all(
-            collection.items.map((c) =>
-              this.renderItemCollection(c, collection.contexts)
-            ),
+            collection.items.map((item) => this.renderItem(collection, item)),
           ),
         }, this.details);
         this.state.set("active_collection", collection.name);
@@ -375,7 +201,9 @@ class LumeBar extends HTMLElement {
     }
   }
 
-  async renderItemCollection(item, contexts) {
+  async renderItem(collection, item, ids = []) {
+    const { contexts } = collection;
+
     const li = dom("li", {
       class: "item",
       "--color-context": item.context
@@ -383,12 +211,13 @@ class LumeBar extends HTMLElement {
         : undefined,
     });
 
-    if (item.text || item.code || item.items?.length) {
-      dom("details", {
-        id: item.id ? `item-${item.id}` : undefined,
-        ontoggle: (e) => {
-          const id = e.target.closest("[id]")?.id;
+    ids.push(item.title);
 
+    if (item.text || item.code || item.items?.length) {
+      const id = await getId(...ids);
+      dom("details", {
+        id,
+        ontoggle: (e) => {
           if (id) {
             this.state.set("open_item", id);
           } else {
@@ -422,7 +251,9 @@ class LumeBar extends HTMLElement {
             ? dom("ul", {
               class: "collection",
               html: await Promise.all(
-                item.items.map((c) => this.renderItemCollection(c, contexts)),
+                item.items.map((item) =>
+                  this.renderItem(collection, item, [...ids])
+                ),
               ),
             })
             : "",
@@ -470,14 +301,6 @@ class LumeBar extends HTMLElement {
 
 customElements.define("lume-bar", LumeBar);
 
-const colors = new Map([
-  ["error", "var(--color-error)"],
-  ["warning", "var(--color-warning)"],
-  ["success", "var(--color-success)"],
-  ["info", "var(--color-info)"],
-  ["important", "var(--color-important)"],
-]);
-
 async function renderContext(item, contexts) {
   if (!item.context) {
     return "";
@@ -503,6 +326,45 @@ async function renderContext(item, contexts) {
     ],
   });
 }
+
+/** Get the color for a specific context or return a default color */
 function getColor(color, defaultColor) {
   return color ? colors.get(color) ?? color : defaultColor;
+}
+
+/**
+ * Fetch the icon from the CDN and cache it.
+ * If the icon is already in the cache, return it directly.
+ */
+async function icon(name) {
+  const variant = name.endsWith("-fill") ? "fill" : "regular";
+  const url =
+    `https://cdn.jsdelivr.net/npm/@phosphor-icons/core@2.1.1/assets/${variant}/${name}.svg`;
+
+  if (cache.has(url)) {
+    return cache.get(url);
+  }
+
+  const response = await fetch(url);
+
+  if (response.ok) {
+    const text = await response.text();
+    cache.set(url, text);
+    return text;
+  }
+  console.error(`Icon not found: ${name}`);
+}
+
+/**
+ * Generate a unique ID based on the name using SHA-1 hashing.
+ * The ID is prefixed with "id_" to ensure it starts with a letter.
+ */
+async function getId(...name) {
+  const data = new TextEncoder().encode(name.join("/"));
+  const hashBuffer = await crypto.subtle.digest("SHA-1", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `id_${hashHex}`;
 }
