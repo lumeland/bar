@@ -360,6 +360,9 @@ async function renderItemCollection(item, contexts) {
           html: [
             await renderContext(item, contexts),
             item.title,
+            item.items?.length
+              ? ` <span class="badge">${item.items.length}</span>`
+              : "",
           ],
         }),
         item.details
