@@ -52,7 +52,7 @@ class State {
  * LumeBar class to create a sidebar component.
  * It fetches data from a JSON file and displays it in a structured format.
  */
-class LumeBar extends HTMLElement {
+export default class LumeBar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
