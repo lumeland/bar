@@ -21,7 +21,7 @@
         },
         {
           "context": "error",
-          "title": "This is the second message",
+          "title": "[code plugin] This is the second message",
           "details": "2.4s",
           "items": [
             {

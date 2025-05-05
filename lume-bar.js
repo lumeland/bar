@@ -1,8 +1,5 @@
 import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.6/dom.js";
 
-// Cache for icons to avoid fetching them multiple times
-const cache = new Map();
-
 // Default colors for different contexts
 const colors = new Map([
   ["error", "var(--color-error)"],
@@ -49,10 +46,10 @@ class State {
 }
 
 /**
- * LumeBar class to create a sidebar component.
+ * Class to create a bar component.
  * It fetches data from a JSON file and displays it in a structured format.
  */
-export default class LumeBar extends HTMLElement {
+export default class Bar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -73,20 +70,16 @@ export default class LumeBar extends HTMLElement {
   }
 
   async connectedCallback() {
-    const [iconIn, iconOut] = await Promise.all([
-      icon("arrows-in-simple"),
-      icon("arrows-out-simple"),
-    ]);
-
+    const icon = dom("lume-icon");
     const toggleButton = dom("button", {
       class: "toggle",
-      html: iconIn,
+      html: icon,
       onclick: () => {
         if (this.state.get("closed")) {
-          toggleButton.innerHTML = iconIn;
+          icon.setAttribute("name", "arrows-in-simple");
           this.open();
         } else {
-          toggleButton.innerHTML = iconOut;
+          icon.setAttribute("name", "arrows-out-simple");
           this.close();
         }
       },
@@ -123,7 +116,10 @@ export default class LumeBar extends HTMLElement {
     }
 
     for (const collection of data.collections) {
-      await this.addCollection(collection);
+      if (collection.items) {
+        await setIds(collection.items, []);
+      }
+      this.addCollection(collection);
     }
   }
 
@@ -137,7 +133,7 @@ export default class LumeBar extends HTMLElement {
     this.bar.classList.remove("is-closed");
   }
 
-  async addCollection(collection) {
+  addCollection(collection) {
     this.collections.push(collection);
 
     const button = dom("button", {
@@ -145,7 +141,7 @@ export default class LumeBar extends HTMLElement {
         collection: collection.name,
       },
       html: [
-        collection.icon ? await icon(collection.icon) : "",
+        collection.icon ? dom("lume-icon", { name: collection.icon }) : "",
         collection.name,
         collection.items?.length
           ? ` <span class="badge">${collection.items.length}</span>`
@@ -153,7 +149,7 @@ export default class LumeBar extends HTMLElement {
       ],
     });
 
-    const onclick = async () => {
+    const onclick = () => {
       const pressed = button.getAttribute("aria-pressed") === "true";
 
       if (pressed) {
@@ -171,8 +167,8 @@ export default class LumeBar extends HTMLElement {
         collection.items?.length
           ? dom("ul", {
             class: "collection",
-            html: await Promise.all(
-              collection.items.map((item) => this.renderItem(collection, item)),
+            html: collection.items.map((item) =>
+              this.renderItem(collection, item)
             ),
           }, this.details)
           : dom("p", {
@@ -192,7 +188,7 @@ export default class LumeBar extends HTMLElement {
     this.menu.appendChild(button);
 
     if (this.state.get("active_collection") === collection.name) {
-      await onclick();
+      onclick();
       const openItem = this.state.get("open_item");
 
       if (openItem) {
@@ -214,7 +210,7 @@ export default class LumeBar extends HTMLElement {
     }
   }
 
-  async renderItem(collection, item, ids = []) {
+  renderItem(collection, item) {
     const { contexts } = collection;
 
     const li = dom("li", {
@@ -224,15 +220,12 @@ export default class LumeBar extends HTMLElement {
         : undefined,
     });
 
-    ids.push(item.title);
-
     if (item.text || item.code || item.items?.length) {
-      const id = await getId(...ids);
       dom("details", {
-        id,
+        id: item.id,
         ontoggle: () => {
-          if (id) {
-            this.state.set("open_item", id);
+          if (item.id) {
+            this.state.set("open_item", item.id);
           } else {
             this.state.remove("open_item");
           }
@@ -241,8 +234,11 @@ export default class LumeBar extends HTMLElement {
           dom("summary", {
             class: "item-title",
             html: [
-              await renderContext(item, contexts),
-              dom("div", { class: "item-title-content", html: item.title }),
+              this.renderContext(item, contexts),
+              dom("div", {
+                class: "item-title-content",
+                html: extractBadge(item.title),
+              }),
               item.items?.length
                 ? ` <span class="badge">${item.items.length}</span>`
                 : "",
@@ -269,11 +265,7 @@ export default class LumeBar extends HTMLElement {
           item.items?.length
             ? dom("ul", {
               class: "collection",
-              html: await Promise.all(
-                item.items.map((item) =>
-                  this.renderItem(collection, item, [...ids])
-                ),
-              ),
+              html: item.items.map((item) => this.renderItem(collection, item)),
             })
             : "",
         ],
@@ -282,8 +274,11 @@ export default class LumeBar extends HTMLElement {
       dom("div", {
         class: "item-title",
         html: [
-          await renderContext(item, contexts),
-          dom("p", { class: "item-title-content", html: item.title }),
+          this.renderContext(item, contexts),
+          dom("p", {
+            class: "item-title-content",
+            html: extractBadge(item.title),
+          }),
           item.details
             ? dom("span", {
               class: "item-details",
@@ -297,19 +292,17 @@ export default class LumeBar extends HTMLElement {
     if (item.actions) {
       const actions = dom("div", {
         class: "item-actions",
-        html: await Promise.all(
-          item.actions.map(async (action) =>
-            dom(action.onclick ? "button" : "a", {
-              class: "item-action",
-              html: [
-                action.icon ? await icon(action.icon) : "",
-                action.text,
-              ],
-              href: action.href,
-              target: action.target,
-              onclick: action.onclick,
-            })
-          ),
+        html: item.actions.map((action) =>
+          dom(action.onclick ? "button" : "a", {
+            class: "item-action",
+            html: [
+              action.icon ? dom("lume-icon", { name: action.icon }) : "",
+              action.text,
+            ],
+            href: action.href,
+            target: action.target,
+            onclick: action.onclick,
+          })
         ),
       });
 
@@ -318,35 +311,75 @@ export default class LumeBar extends HTMLElement {
 
     return li;
   }
+
+  renderContext(item, contexts) {
+    if (!item.context) {
+      return "";
+    }
+
+    const context = contexts?.[item.context];
+    if (!context) {
+      console.error(`Context not found: ${item.context}`);
+      return "";
+    }
+
+    const { color, background } = context;
+
+    return dom("span", {
+      class: "badge",
+      "--background": background
+        ? colors.get(background) ?? background
+        : "var(--color-dim)",
+      "--color": getColor(color, "var(--color-background)"),
+      html: [
+        context.icon ? dom("lume-icon", { name: context.icon }) : "",
+        item.context,
+      ],
+    });
+  }
 }
 
-customElements.define("lume-bar", LumeBar);
+customElements.define("lume-bar", Bar);
 
-async function renderContext(item, contexts) {
-  if (!item.context) {
-    return "";
+/**
+ * Custom element to display an icon.
+ * It fetches the icon from a CDN and caches it for future use.
+ */
+class Icon extends HTMLElement {
+  // Cache for icons to avoid fetching them multiple times
+  static cache = new Map();
+
+  static get observedAttributes() {
+    return ["name"];
   }
 
-  const context = contexts?.[item.context];
-  if (!context) {
-    console.error(`Context not found: ${item.context}`);
-    return "";
+  async attributeChangedCallback(name, oldValue, newValue) {
+    this.innerHTML = await this.fetch(newValue);
   }
 
-  const { color, background } = context;
+  async fetch(name) {
+    const variant = name.endsWith("-fill") ? "fill" : "regular";
+    const url =
+      `https://cdn.jsdelivr.net/npm/@phosphor-icons/core@2.1.1/assets/${variant}/${name}.svg`;
 
-  return dom("span", {
-    class: "badge",
-    "--background": background
-      ? colors.get(background) ?? background
-      : "var(--color-dim)",
-    "--color": getColor(color, "var(--color-background)"),
-    html: [
-      context.icon ? await icon(context.icon) : "",
-      item.context,
-    ],
-  });
+    if (Icon.cache.has(url)) {
+      return Icon.cache.get(url);
+    }
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.error(`Icon not found: ${name}`);
+    }
+
+    const text = response.ok ? await response.text() : "";
+
+    Icon.cache.set(url, text);
+    return text;
+  }
 }
+
+customElements.define("lume-icon", Icon);
 
 /** Get the color for a specific context or return a default color */
 function getColor(color, defaultColor) {
@@ -354,38 +387,46 @@ function getColor(color, defaultColor) {
 }
 
 /**
- * Fetch the icon from the CDN and cache it.
- * If the icon is already in the cache, return it directly.
+ * Set missing IDs for items in a collection.
  */
-async function icon(name) {
-  const variant = name.endsWith("-fill") ? "fill" : "regular";
-  const url =
-    `https://cdn.jsdelivr.net/npm/@phosphor-icons/core@2.1.1/assets/${variant}/${name}.svg`;
+async function setIds(items, ids) {
+  for (const item of items) {
+    if (item.id) {
+      ids.push(item.id);
+    } else {
+      ids.push(item.title);
+      item.id = await generateId(ids);
+    }
 
-  if (cache.has(url)) {
-    return cache.get(url);
+    if (item.items) {
+      await setIds(item.items, [...ids]);
+    }
   }
-
-  const response = await fetch(url);
-
-  if (response.ok) {
-    const text = await response.text();
-    cache.set(url, text);
-    return text;
-  }
-  console.error(`Icon not found: ${name}`);
 }
 
 /**
  * Generate a unique ID based on the name using SHA-1 hashing.
  * The ID is prefixed with "id_" to ensure it starts with a letter.
  */
-async function getId(...name) {
-  const data = new TextEncoder().encode(name.join("/"));
+async function generateId(names) {
+  const data = new TextEncoder().encode(names.join("/"));
   const hashBuffer = await crypto.subtle.digest("SHA-1", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
   return `id_${hashHex}`;
+}
+
+function extractBadge(text) {
+  if (!text.startsWith("[")) {
+    return ["", text];
+  }
+  const match = text.match(/^\[([\w\s-]+)\]\s*(.*)$/);
+  return match
+    ? [
+      `<span class="badge">${match[1]}</span> `,
+      match[2],
+    ]
+    : ["", text];
 }
