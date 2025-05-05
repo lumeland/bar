@@ -188,17 +188,20 @@ export default class LumeBar extends HTMLElement {
       const openItem = this.state.get("open_item");
 
       if (openItem) {
-        let item = this.details.querySelector(`#${openItem}`)?.closest(
-          "details",
-        );
-        const items = [];
+        const target = this.details.querySelector(`#${openItem}`);
 
-        while (item) {
-          items.push(item);
-          item = item.parentElement.closest("details");
+        if (target) {
+          let item = target?.closest("details");
+          const items = [];
+
+          while (item) {
+            items.push(item);
+            item = item.parentElement.closest("details");
+          }
+
+          items.reverse().forEach((item) => item.open = true);
+          target.scrollIntoView();
         }
-
-        items.reverse().forEach((item) => item.open = true);
       }
     }
   }
