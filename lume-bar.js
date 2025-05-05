@@ -50,8 +50,14 @@ class State {
  * It fetches data from a JSON file and displays it in a structured format.
  */
 export default class Bar extends HTMLElement {
+  static get observedAttributes() {
+    return ["src"];
+  }
+
   constructor() {
     super();
+    this.state = new State();
+
     this.attachShadow({ mode: "open" });
     const styles = import.meta.resolve("./styles.css");
     this.shadowRoot.innerHTML = `
@@ -59,19 +65,16 @@ export default class Bar extends HTMLElement {
 
       <div class="bar">
         <div class="menu"></div>
-        <div class="details"></div>
+        <div hidden class="details"></div>
       </div>
     `;
     this.bar = this.shadowRoot.querySelector(".bar");
     this.menu = this.bar.querySelector(".menu");
     this.details = this.bar.querySelector(".details");
     this.collections = [];
-    this.state = new State();
-  }
 
-  async connectedCallback() {
-    const icon = dom("lume-icon");
-    const toggleButton = dom("button", {
+    const icon = dom("lume-icon", { name: "arrows-in-simple" });
+    dom("button", {
       class: "toggle",
       html: icon,
       onclick: () => {
@@ -83,21 +86,21 @@ export default class Bar extends HTMLElement {
           this.close();
         }
       },
-    });
-
-    this.menu.appendChild(toggleButton);
+    }, this.menu);
 
     if (this.state.get("closed")) {
       this.close();
     }
-    const src = this.getAttribute("src");
-    if (!src) {
+  }
+
+  async attributeChangedCallback(name, _oldValue, newValue) {
+    if (!newValue) {
       return;
     }
 
-    const response = await fetch(src);
+    const response = await fetch(newValue);
     if (!response.ok) {
-      console.error(`Failed to load ${src}: ${response.statusText}`);
+      console.error(`Failed to load ${newValue}: ${response.statusText}`);
       return;
     }
 

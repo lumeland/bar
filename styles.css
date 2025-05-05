@@ -18,6 +18,7 @@
   --font-family-ui: system-ui, sans-serif;
   --border-radius: 6px;
   --gap: 8px;
+  --transition: 200ms;
 
   position: fixed;
   bottom: 0;
@@ -28,6 +29,9 @@
 
   @media (max-width: 600px) {
     width: min(600px - 40px, 100%);
+  }
+  @media (prefers-reduced-motion) {
+    --transition: 0;
   }
 }
 lume-icon {
@@ -58,6 +62,12 @@ lume-icon {
 
   &.is-closed {
     width: min-content;
+    opacity: 0.5;
+    transition: opacity var(--transition);
+
+    &:hover {
+      opacity: 1;
+    }
 
     @media (max-width: 560px) {
       border-radius: 0 var(--border-radius) 0 0;
