@@ -238,6 +238,12 @@ export default class LumeBar extends HTMLElement {
               item.items?.length
                 ? ` <span class="badge">${item.items.length}</span>`
                 : "",
+              item.details
+                ? dom("span", {
+                  class: "item-details",
+                  html: item.details,
+                })
+                : "",
             ],
           }),
           item.text
@@ -248,7 +254,7 @@ export default class LumeBar extends HTMLElement {
             : "",
           item.code
             ? dom("pre", {
-              class: "item-text",
+              class: "item-code",
               html: item.code,
             })
             : "",
@@ -270,14 +276,13 @@ export default class LumeBar extends HTMLElement {
         html: [
           await renderContext(item, contexts),
           item.title,
+          item.details
+            ? dom("span", {
+              class: "item-details",
+              html: item.details,
+            })
+            : "",
         ],
-      }, li);
-    }
-
-    if (item.details) {
-      dom("span", {
-        class: "item-details",
-        html: item.details,
       }, li);
     }
 

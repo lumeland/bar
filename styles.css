@@ -164,6 +164,7 @@
   padding: 0 var(--gap);
 
   > :first-child {
+    min-width: 0;
     flex: 1 1 auto;
   }
   .item {
@@ -182,6 +183,7 @@
   column-gap: var(--gap);
   min-height: 40px;
   box-sizing: border-box;
+  word-break: break-all;
 
   svg {
     width: 16px;
@@ -196,10 +198,17 @@ summary.item-title {
   &:hover {
     color: var(--color-base);
   }
+  .item-details {
+    margin-left: auto;
+  }
+}
+.item-code {
+  overflow-x: auto;
 }
 .item-text {
   padding-bottom: var(--gap);
   margin: 0;
+
   a {
     color: var(--color-primary);
     text-decoration: none;

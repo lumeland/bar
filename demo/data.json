@@ -22,17 +22,18 @@
         {
           "context": "error",
           "title": "This is the second message",
+          "details": "2.4s",
           "items": [
             {
               "context": "info",
-              "title": "This is the message title",
+              "title": "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong message title",
               "code": "code",
               "items": [
                 {
                   "id": "fi12",
                   "context": "info",
                   "title": "This is the message title",
-                  "code": "code"
+                  "code": "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong code"
                 },
                 {
                   "title": "This page is editable",
