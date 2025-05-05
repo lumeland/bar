@@ -42,6 +42,10 @@
                     {
                       "text": "Edit",
                       "href": "https://lume.land"
+                    },
+                    {
+                      "text": "Alert",
+                      "onclick": "alert('It works!')"
                     }
                   ]
                 }

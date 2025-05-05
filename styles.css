@@ -113,10 +113,6 @@
   scrollbar-color: var(--color-line) transparent;
   border-top: solid 1px var(--color-line);
   background-color: var(--color-highlight);
-
-  &:empty {
-    display: none;
-  }
 }
 
 .collection {

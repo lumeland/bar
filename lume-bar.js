@@ -1,4 +1,4 @@
-import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.5/dom.js";
+import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.6/dom.js";
 
 // Cache for icons to avoid fetching them multiple times
 const cache = new Map();
@@ -159,6 +159,7 @@ export default class LumeBar extends HTMLElement {
       if (pressed) {
         button.removeAttribute("aria-pressed");
         this.details.innerHTML = "";
+        this.details.hidden = true;
         this.state.remove("active_collection");
       } else {
         this.menu.querySelectorAll("button").forEach((btn) =>
@@ -166,6 +167,7 @@ export default class LumeBar extends HTMLElement {
         );
         button.setAttribute("aria-pressed", "true");
         this.details.innerHTML = "";
+        this.details.hidden = false;
         dom("ul", {
           class: "collection",
           html: await Promise.all(
@@ -289,17 +291,20 @@ export default class LumeBar extends HTMLElement {
     if (item.actions) {
       const actions = dom("div", {
         class: "item-actions",
-        html: await Promise.all(item.actions.map(async (action) =>
-          dom("a", {
-            class: "item-action",
-            html: [
-              action.icon ? await icon(action.icon) : "",
-              action.text,
-            ],
-            href: action.href,
-            target: action.target,
-          })
-        )),
+        html: await Promise.all(
+          item.actions.map(async (action) =>
+            dom(action.onclick ? "button" : "a", {
+              class: "item-action",
+              html: [
+                action.icon ? await icon(action.icon) : "",
+                action.text,
+              ],
+              href: action.href,
+              target: action.target,
+              onclick: action.onclick,
+            })
+          ),
+        ),
       });
 
       li.appendChild(actions);
