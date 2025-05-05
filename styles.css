@@ -173,18 +173,22 @@
 }
 .item-title {
   padding: var(--gap) 0;
-  margin: 0;
   display: flex;
   align-items: center;
   column-gap: var(--gap);
   min-height: 40px;
   box-sizing: border-box;
   word-break: break-all;
+  padding-right: 8px;
 
   svg {
     width: 16px;
     height: 16px;
   }
+}
+.item-title-content {
+  flex: 1 1 auto;
+  margin: 0;
 }
 summary.item-title {
   list-style: none;
