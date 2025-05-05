@@ -81,6 +81,10 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Empty collection",
+      "empty": "This collection is empty"
     }
   ]
 }

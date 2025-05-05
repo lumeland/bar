@@ -147,7 +147,7 @@ export default class LumeBar extends HTMLElement {
       html: [
         collection.icon ? await icon(collection.icon) : "",
         collection.name,
-        collection.items.length
+        collection.items?.length
           ? ` <span class="badge">${collection.items.length}</span>`
           : "",
       ],
@@ -168,12 +168,18 @@ export default class LumeBar extends HTMLElement {
         button.setAttribute("aria-pressed", "true");
         this.details.innerHTML = "";
         this.details.hidden = false;
-        dom("ul", {
-          class: "collection",
-          html: await Promise.all(
-            collection.items.map((item) => this.renderItem(collection, item)),
-          ),
-        }, this.details);
+        collection.items?.length
+          ? dom("ul", {
+            class: "collection",
+            html: await Promise.all(
+              collection.items.map((item) => this.renderItem(collection, item)),
+            ),
+          }, this.details)
+          : dom("p", {
+            class: "collection-empty",
+            html: collection.empty || "No items found",
+          }, this.details);
+
         this.state.set("active_collection", collection.name);
       }
     };
