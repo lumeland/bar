@@ -26,6 +26,7 @@
   transform: translateX(-50%);
   z-index: 100;
   width: min(1200px, 100% - 40px);
+  pointer-events: none;
 
   @media (max-width: 600px) {
     width: min(600px - 40px, 100%);
@@ -34,6 +35,17 @@
     --transition: 0;
   }
 }
+
+:host(.is-hidden) {
+  pointer-events: initial;
+  opacity: 0;
+}
+
+:host(.is-hidden:hover) {
+  transition: opacity var(--transition);
+  opacity: 1;
+}
+
 lume-icon {
   display: inline-block;
   width: 16px;
@@ -46,7 +58,13 @@ lume-icon {
     height: 100%;
   }
 }
+
+:host(.is-hidden) .hide {
+  display: none;
+}
+
 .bar {
+  background-color: red;
   background-color: var(--color-background);
   color: var(--color-text);
   box-shadow: 0 0 0 1px black;
@@ -55,6 +73,7 @@ lume-icon {
   font-size: 14px;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
   overflow: hidden;
+  pointer-events: initial;
 
   @media (max-width: 560px) {
     border-radius: 0;
@@ -62,12 +81,6 @@ lume-icon {
 
   &.is-closed {
     width: min-content;
-    opacity: 0.5;
-    transition: opacity var(--transition);
-
-    &:hover {
-      opacity: 1;
-    }
 
     @media (max-width: 560px) {
       border-radius: 0 var(--border-radius) 0 0;
@@ -77,9 +90,12 @@ lume-icon {
       display: none;
     }
 
-    .menu > :not(.toggle) {
+    .menu > :not(.controls) {
       display: none;
     }
+  }
+  &:not(.is-closed) .hide {
+    display: none;
   }
 }
 .menu {
@@ -119,10 +135,11 @@ lume-icon {
       width: 20px;
     }
   }
-  .toggle {
+  .controls {
     order: 1;
     margin-left: auto;
     border: none;
+    display: flex;
   }
 }
 .details {

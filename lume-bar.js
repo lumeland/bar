@@ -64,20 +64,32 @@ export default class Bar extends HTMLElement {
       <link rel="stylesheet" href="${styles}">
 
       <div class="bar">
-        <div class="menu"></div>
+        <div class="menu"><div class="controls"></div></div>
         <div hidden class="details"></div>
       </div>
     `;
     this.bar = this.shadowRoot.querySelector(".bar");
     this.menu = this.bar.querySelector(".menu");
+    this.controls = this.menu.querySelector(".controls");
     this.details = this.bar.querySelector(".details");
     this.collections = [];
 
+    const hide = dom("button", {
+      class: "hide",
+      title: "Completely hide the Lume bar (hover here to show it again)",
+      html: dom("lume-icon", { name: "x" }),
+      onclick: () => {
+        this.classList.add("is-hidden");
+        this.state.set("hidden", true);
+      },
+    }, this.controls);
+
     const icon = dom("lume-icon", { name: "arrows-in-simple" });
     dom("button", {
-      class: "toggle",
       html: icon,
+      title: "Toggle the Lume bar",
       onclick: () => {
+        this.classList.remove("is-hidden");
         if (this.state.get("closed")) {
           icon.setAttribute("name", "arrows-in-simple");
           this.open();
@@ -86,10 +98,13 @@ export default class Bar extends HTMLElement {
           this.close();
         }
       },
-    }, this.menu);
+    }, this.controls);
 
     if (this.state.get("closed")) {
       this.close();
+    }
+    if (this.state.get("hidden")) {
+      hide.click();
     }
   }
 
@@ -110,7 +125,7 @@ export default class Bar extends HTMLElement {
 
   async update(data) {
     this.collections = [];
-    this.menu.querySelectorAll(":scope > button:not(.toggle)")
+    this.menu.querySelectorAll(":scope > button")
       .forEach((btn) => btn.remove());
     this.details.innerHTML = "";
 
