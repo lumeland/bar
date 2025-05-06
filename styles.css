@@ -36,12 +36,42 @@
   }
 }
 
-:host(.is-hidden) {
+:host(.is-closed) {
   pointer-events: initial;
   opacity: 0;
+
+  .bar {
+    width: min-content;
+
+    @media (max-width: 560px) {
+      border-radius: 0 var(--border-radius) 0 0;
+    }
+
+    .details {
+      display: none;
+    }
+
+    .menu > :not(.controls) {
+      display: none;
+    }
+  }
+}
+:host(.is-closed.is-animated) {
+  animation-name: hide;
+  animation-duration: var(--transition);
+  animation-delay: 1s;
+  animation-fill-mode: backwards;
+}
+@keyframes hide {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
-:host(.is-hidden:hover) {
+:host(.is-closed:hover) {
   transition: opacity var(--transition);
   opacity: 1;
 }
@@ -59,10 +89,6 @@ lume-icon {
   }
 }
 
-:host(.is-hidden) .hide {
-  display: none;
-}
-
 .bar {
   background-color: red;
   background-color: var(--color-background);
@@ -78,33 +104,11 @@ lume-icon {
   @media (max-width: 560px) {
     border-radius: 0;
   }
-
-  &.is-closed {
-    width: min-content;
-
-    @media (max-width: 560px) {
-      border-radius: 0 var(--border-radius) 0 0;
-    }
-
-    .details {
-      display: none;
-    }
-
-    .menu > :not(.controls) {
-      display: none;
-    }
-  }
-  &:not(.is-closed) .hide {
-    display: none;
-  }
 }
 .menu {
   display: flex;
-  overflow-x: auto;
   margin-bottom: -1px;
   z-index: 1;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-line) transparent;
 
   button {
     display: flex;
@@ -112,7 +116,6 @@ lume-icon {
     column-gap: var(--gap);
     background: none;
     border: none;
-    border-right: solid 1px var(--color-line);
     border-bottom: solid 1px transparent;
     height: 40px;
     padding: 0 0.8em;
@@ -135,11 +138,22 @@ lume-icon {
       width: 20px;
     }
   }
-  .controls {
-    order: 1;
-    margin-left: auto;
-    border: none;
-    display: flex;
+}
+.controls {
+  order: 1;
+  margin-left: auto;
+  border: none;
+  display: flex;
+  border-left: solid 1px var(--color-line);
+}
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+
+  > button + button {
+    border-left: solid 1px var(--color-line);
   }
 }
 .details {
