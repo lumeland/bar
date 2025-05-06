@@ -70,7 +70,9 @@ export default class Bar extends HTMLElement {
     this.details = this.bar.querySelector(".details");
     this.collections = [];
 
-    const icon = dom("lume-icon", { name: "arrows-out-simple" });
+    const icon = dom("lume-icon", {
+      name: this.state.get("closed") ? "arrows-out-simple" : "x",
+    });
     const toggle = dom("button", {
       html: icon,
       title: "Toggle the Lume bar",
