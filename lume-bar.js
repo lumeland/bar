@@ -116,8 +116,7 @@ export default class Bar extends HTMLElement {
 
   async update(data) {
     this.collections = [];
-    this.menu.querySelectorAll(":scope > button")
-      .forEach((btn) => btn.remove());
+    this.tabs.innerHTML = "";
     this.details.innerHTML = "";
 
     if (!data.collections) {
