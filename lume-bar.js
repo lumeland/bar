@@ -11,13 +11,13 @@ const colors = new Map([
 
 /**
  * Class to manage the state of the LumeBar component.
- * It uses localStorage to persist the state across page reloads.
+ * It uses sessionStorage to persist the state across page reloads.
  */
 class State {
   key = "lume-bar";
 
   constructor() {
-    const restore = localStorage.getItem(this.key);
+    const restore = sessionStorage.getItem(this.key);
     this.state = restore ? JSON.parse(restore) : {};
   }
 
@@ -35,13 +35,8 @@ class State {
     this.save();
   }
 
-  clear() {
-    this.state = {};
-    localStorage.removeItem(this.key);
-  }
-
   save() {
-    localStorage.setItem(this.key, JSON.stringify(this.state));
+    sessionStorage.setItem(this.key, JSON.stringify(this.state));
   }
 }
 
