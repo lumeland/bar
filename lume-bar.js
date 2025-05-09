@@ -430,7 +430,7 @@ function extractBadge(text) {
   if (!text.startsWith("[")) {
     return ["", text];
   }
-  const match = text.match(/^\[([\w\s-]+)\]\s*(.*)$/);
+  const match = text.match(/^\[([^\]]+)\]\s*(.*)$/);
   return match
     ? [
       `<span class="badge">${match[1]}</span> `,
