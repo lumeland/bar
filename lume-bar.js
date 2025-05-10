@@ -341,7 +341,7 @@ export default class Bar extends HTMLElement {
       "--color": getColor(color, "var(--color-background)"),
       html: [
         context.icon ? dom("lume-icon", { name: context.icon }) : "",
-        item.context,
+        context.title ?? item.context,
       ],
     });
   }

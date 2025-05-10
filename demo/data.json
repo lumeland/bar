@@ -9,6 +9,7 @@
           "icon": "info"
         },
         "error": {
+          "title": "this is an error",
           "background": "error"
         }
       },
