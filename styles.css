@@ -191,6 +191,7 @@ lume-icon {
 .collection-empty {
   text-align: center;
   color: var(--color-dim);
+  font-size: 16px;
 }
 .badge {
   --background: var(--color-dim);
@@ -210,6 +211,7 @@ lume-icon {
   white-space: nowrap;
   border-radius: 10px;
   text-transform: uppercase;
+  font-family: var(--font-family-code);
   font-size: 12px;
   font-weight: 500;
 }
@@ -245,7 +247,7 @@ lume-icon {
   flex: 1 1 auto;
   margin: 0;
   .badge {
-    color: var(--color-dim);
+    color: var(--color-text);
     background-color: var(--color-line);
   }
 }
@@ -260,6 +262,9 @@ summary.item-title {
   .item-details {
     margin-left: auto;
   }
+}
+.item-details {
+  font-family: var(--font-family-code);
 }
 .item-code {
   overflow-x: auto;
