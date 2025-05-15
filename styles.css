@@ -27,6 +27,12 @@
   z-index: 100;
   width: min(1200px, 100% - 40px);
   pointer-events: none;
+  text-rendering: auto;
+  overflow-wrap: break-word;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
 
   @media (max-width: 600px) {
     width: min(600px - 40px, 100%);
@@ -254,6 +260,10 @@ lume-icon {
 summary.item-title {
   list-style: none;
   cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
 
   [open] > &,
   &:hover {
