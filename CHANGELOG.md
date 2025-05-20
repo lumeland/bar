@@ -7,9 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.1.5] - Unreleased
+### Changed
+- Use popover API to ensure the bar is always on top of other elements.
+
 ### Fixed
 - Summary styles in Safari.
 - Font rendering on macOS.
+- Bar height in small sizes.
 
 ## [0.1.4] - 2025-05-10
 ### Fixed

@@ -20,11 +20,11 @@
   --gap: 8px;
   --transition: 200ms;
 
-  position: fixed;
-  bottom: 0;
-  left: 50%;
+  margin: 0;
+  padding: 0;
+  inset: auto auto 0 50%;
+  background: none;
   transform: translateX(-50%);
-  z-index: 100;
   width: min(1200px, 100% - 40px);
   pointer-events: none;
   text-rendering: auto;
@@ -33,6 +33,7 @@
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
+  border: none;
 
   @media (max-width: 600px) {
     width: min(600px - 40px, 100%);
@@ -163,8 +164,8 @@ lume-icon {
   }
 }
 .details {
-  min-height: 200px;
-  max-height: max(200px, 50vh);
+  min-height: min(200px, 50vh);
+  max-height: min(max(200px, 50vh), 100vh - 40px);
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-line) transparent;
@@ -218,7 +219,8 @@ lume-icon {
   border-radius: 10px;
   text-transform: uppercase;
   font-family: var(--font-family-code);
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1;
   font-weight: 500;
 }
 .item {

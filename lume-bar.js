@@ -63,6 +63,10 @@ export default class Bar extends HTMLElement {
         <div hidden class="details"></div>
       </div>
     `;
+    // Ensure the bar is always on top of other elements
+    this.setAttribute("popover", "manual");
+    this.showPopover();
+
     this.bar = this.shadowRoot.querySelector(".bar");
     this.menu = this.bar.querySelector(".menu");
     this.controls = this.menu.querySelector(".controls");
