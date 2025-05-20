@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 - Font rendering on macOS.
 - Bar height in small sizes.
 - `href` property of an action should be optional.
+- Typography tweaks.
 
 ## [0.1.4] - 2025-05-10
 ### Fixed

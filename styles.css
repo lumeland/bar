@@ -218,10 +218,9 @@ lume-icon {
   white-space: nowrap;
   border-radius: 10px;
   text-transform: uppercase;
-  font-family: var(--font-family-code);
-  font-size: 13px;
-  line-height: 1;
+  font-size: 12px;
   font-weight: 500;
+  font-variant-numeric: proportional-nums;
 }
 .item {
   display: flex;
@@ -237,9 +236,6 @@ lume-icon {
     border-radius: var(--border-radius);
     padding-right: 0;
   }
-}
-.item.is-code {
-  font-family: var(--font-family-code);
 }
 .item-title {
   padding: var(--gap) 0;
@@ -276,9 +272,10 @@ summary.item-title {
   }
 }
 .item-details {
-  font-family: var(--font-family-code);
+  font-variant-numeric: proportional-nums;
 }
 .item-code {
+  font-family: var(--font-family-code);
   overflow-x: auto;
 }
 .item-text {
