@@ -106,7 +106,7 @@ export interface Action {
   /**
    * The URL to open when the action is clicked
    */
-  href: string;
+  href?: string;
 
   /**
    * The callback to perform when the action is clicked

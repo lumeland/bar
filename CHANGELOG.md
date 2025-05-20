@@ -14,6 +14,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 - Summary styles in Safari.
 - Font rendering on macOS.
 - Bar height in small sizes.
+- `href` property of an action should be optional.
 
 ## [0.1.4] - 2025-05-10
 ### Fixed
