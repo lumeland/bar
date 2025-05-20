@@ -9,10 +9,13 @@
     <h1>Hello, World!</h1>
     <p>Welcome to my website.</p>
 
-    <lume-bar src="./data.json"></lume-bar>
-
     <script type="module">
-      import "../lume-bar.js";
+      import "/lume-bar.js";
+      import data from "./data.json" with { type: "json" };
+
+      const bar = document.createElement("lume-bar");
+      document.body.append(bar);
+      bar.update(data);
     </script>
   </body>
 </html>

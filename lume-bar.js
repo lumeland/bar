@@ -1,5 +1,7 @@
 import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.6/dom.js";
 
+const styles = await (await fetch(import.meta.resolve("./styles.css"))).text();
+
 // Default colors for different contexts
 const colors = new Map([
   ["error", "var(--color-error)"],
@@ -54,18 +56,14 @@ export default class Bar extends HTMLElement {
     this.state = new State();
 
     this.attachShadow({ mode: "open" });
-    const styles = import.meta.resolve("./styles.css");
     this.shadowRoot.innerHTML = `
-      <link rel="stylesheet" href="${styles}">
+      <style>${styles}</style>
 
       <div class="bar">
         <div class="menu"><div class="tabs"></div><div class="controls"></div></div>
         <div hidden class="details"></div>
       </div>
     `;
-    // Ensure the bar is always on top of other elements
-    this.setAttribute("popover", "manual");
-    this.showPopover();
 
     this.bar = this.shadowRoot.querySelector(".bar");
     this.menu = this.bar.querySelector(".menu");
@@ -103,7 +101,13 @@ export default class Bar extends HTMLElement {
     }
   }
 
-  async attributeChangedCallback(name, _oldValue, newValue) {
+  connectedCallback() {
+    // Ensure the bar is always on top of other elements
+    this.setAttribute("popover", "manual");
+    this.showPopover();
+  }
+
+  async attributeChangedCallback(_name, _oldValue, newValue) {
     if (!newValue) {
       return;
     }
@@ -365,7 +369,7 @@ class Icon extends HTMLElement {
     return ["name"];
   }
 
-  async attributeChangedCallback(name, oldValue, newValue) {
+  async attributeChangedCallback(_name, _oldValue, newValue) {
     this.innerHTML = await this.fetch(newValue);
   }
 

@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "dev": "deno serve --watch --allow-read demo/server.ts"
+  }
+}
