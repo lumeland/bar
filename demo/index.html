@@ -12,10 +12,33 @@
     <script type="module">
       import "/lume-bar.js";
       import data from "./data.json" with { type: "json" };
+      let ws, bar;
 
-      const bar = document.createElement("lume-bar");
-      document.body.append(bar);
-      bar.update(data);
+      function socket() {
+        ws = new WebSocket(`ws://${document.location.host}/`);
+
+        ws.onopen = () => {
+          if (!bar) {
+            bar = document.createElement("lume-bar");
+            document.body.append(bar);
+            bar.update(data);
+          }
+          bar.websocket = ws;
+        };
+
+        ws.onclose = () => {
+          setTimeout(socket, 5000);
+        };
+        ws.onerror = (err) =>
+          console.error("Lume webSocket error observed:", err);
+        ws.addEventListener("message", (ev) => {
+          const data = JSON.parse(ev.data);
+          if (data?.action === "reload") {
+            alert("reload");
+          }
+        });
+      }
+      socket();
     </script>
   </body>
 </html>

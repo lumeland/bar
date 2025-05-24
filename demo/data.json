@@ -72,12 +72,13 @@
       "items": [
         {
           "title": "This page is editable",
-          "text": "Probando código HTML, <a href='#'>e ligazóns</a>",
           "actions": [
             {
-              "text": "Edit",
-              "href": "https://lume.land",
-              "icon": "pencil-simple"
+              "text": "Reload",
+              "icon": "arrows-clockwise",
+              "data": {
+                "action": "Reload"
+              }
             }
           ]
         }

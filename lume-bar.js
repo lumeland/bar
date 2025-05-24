@@ -1,4 +1,4 @@
-import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.6/dom.js";
+import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.9/dom.js";
 
 const styles = await (await fetch(import.meta.resolve("./styles.css"))).text();
 
@@ -220,6 +220,11 @@ export default class Bar extends HTMLElement {
           }
 
           items.reverse().forEach((item) => item.open = true);
+
+          if (target.firstElementChild?.tagName === "DETAILS") {
+            target.firstElementChild.open = true;
+          }
+
           target.scrollIntoView();
         }
       }
@@ -231,6 +236,7 @@ export default class Bar extends HTMLElement {
 
     const li = dom("li", {
       class: "item",
+      id: item.id,
       "--color-context": item.context
         ? getColor(contexts?.[item.context]?.background, "var(--color-dim)")
         : undefined,
@@ -238,7 +244,6 @@ export default class Bar extends HTMLElement {
 
     if (item.text || item.code || item.items?.length) {
       dom("details", {
-        id: item.id,
         ontoggle: () => {
           if (item.id) {
             this.state.set("open_item", item.id);
@@ -308,18 +313,7 @@ export default class Bar extends HTMLElement {
     if (item.actions) {
       const actions = dom("div", {
         class: "item-actions",
-        html: item.actions.map((action) =>
-          dom(action.onclick ? "button" : "a", {
-            class: "item-action",
-            html: [
-              action.icon ? dom("lume-icon", { name: action.icon }) : "",
-              action.text,
-            ],
-            href: action.href,
-            target: action.target,
-            onclick: action.onclick,
-          })
-        ),
+        html: item.actions.map((action) => this.renderAction(action, item)),
       });
 
       li.appendChild(actions);
@@ -352,6 +346,32 @@ export default class Bar extends HTMLElement {
         context.title ?? item.context,
       ],
     });
+  }
+
+  renderAction(action, item) {
+    const button = dom((action.href) ? "a" : "button", {
+      class: "item-action",
+      html: [
+        action.icon ? dom("lume-icon", { name: action.icon }) : "",
+        action.text,
+      ],
+      data: action.data,
+      href: action.href,
+      target: action.target,
+      onclick: action.data && !action.onclick
+        ? (ev) => {
+          ev.preventDefault();
+          if (this.websocket) {
+            this.websocket.send(JSON.stringify({
+              item,
+              data: button.dataset,
+            }));
+          }
+        }
+        : action.onclick,
+    });
+
+    return button;
   }
 }
 
