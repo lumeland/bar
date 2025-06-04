@@ -8,7 +8,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.1.6] - Unreleased
 ### Fixed
-- Action type.
+- Action types.
 
 ## [0.1.5] - 2025-06-04
 ### Added
