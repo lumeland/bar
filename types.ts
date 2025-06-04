@@ -126,4 +126,10 @@ export interface Action {
    * It can be "_blank", "_self", "_parent", "_top", etc.
    */
   target?: string;
+
+  /**
+   * Data to pass to send a message to the background script
+   * This is used to send messages to the background script
+   */
+  data: Record<string, unknown>;
 }

@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.6] - Unreleased
+### Fixed
+- Action type.
+
 ## [0.1.5] - 2025-06-04
 ### Added
 - Ability to send data from websocket.
@@ -40,6 +44,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 ## [0.1.0] - 2025-05-06
 First version
 
+[0.1.6]: https://github.com/lumeland/bar/compare/v0.1.5...HEAD
 [0.1.5]: https://github.com/lumeland/bar/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/lumeland/bar/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/lumeland/bar/compare/v0.1.2...v0.1.3
