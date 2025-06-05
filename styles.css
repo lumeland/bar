@@ -60,6 +60,10 @@
     .menu > :not(.controls) {
       display: none;
     }
+
+    .controls {
+      border-left: none;
+    }
   }
 }
 
