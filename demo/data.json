@@ -17,6 +17,7 @@
         {
           "context": "info",
           "title": "This is the message title",
+          "icon": "x",
           "code": "code",
           "details": "2.4s"
         },
@@ -24,6 +25,7 @@
           "context": "error",
           "title": "[code plugin] This is the second message",
           "details": "2.4s",
+          "icon": "align-top",
           "items": [
             {
               "context": "info",

@@ -259,15 +259,22 @@ lume-icon {
   box-sizing: border-box;
   word-break: break-all;
   padding-right: 8px;
+}
+.item-title-content {
+  flex: 1 1 auto;
+  margin: 0;
 
   code {
     font-family: var(--font-family-code);
     color: var(--color-base);
   }
-}
-.item-title-content {
-  flex: 1 1 auto;
-  margin: 0;
+
+  lume-icon {
+    vertical-align: middle;
+    color: var(--color-dim);
+    width: 20px;
+  }
+
   .badge {
     color: var(--color-text);
     background-color: var(--color-line);
@@ -286,6 +293,7 @@ summary.item-title {
   [open] > &,
   &:hover {
     color: var(--color-base);
+    background-color: var(--color-background);
   }
   .item-details {
     margin-left: auto;

@@ -261,7 +261,7 @@ export default class Bar extends HTMLElement {
               this.renderContext(item, contexts),
               dom("div", {
                 class: "item-title-content",
-                html: extractBadge(item.title),
+                html: extractBadge(item.title, item.icon),
               }),
               item.items?.length
                 ? ` <span class="badge">${item.items.length}</span>`
@@ -301,7 +301,7 @@ export default class Bar extends HTMLElement {
           this.renderContext(item, contexts),
           dom("p", {
             class: "item-title-content",
-            html: extractBadge(item.title),
+            html: extractBadge(item.title, item.icon),
           }),
           item.details
             ? dom("span", {
@@ -473,14 +473,18 @@ async function generateId(names) {
   return `id_${hashHex}`;
 }
 
-function extractBadge(text) {
+function extractBadge(text, icon) {
   if (!text.startsWith("[")) {
-    return ["", text];
+    return [
+      icon ? `<lume-icon name="${icon}"></lume-icon> ` : "",
+      text,
+    ];
   }
   const match = text.match(/^\[([^\]]+)\]\s*(.*)$/);
   return match
     ? [
       `<span class="badge">${match[1]}</span> `,
+      icon ? `<lume-icon name="${icon}"></lume-icon> ` : "",
       match[2],
     ]
     : ["", text];

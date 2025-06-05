@@ -71,6 +71,12 @@ export interface Item {
   title: string;
 
   /**
+   * The icon name to show just before the title
+   * @see https://phosphoricons.com/
+   */
+  icon?: string;
+
+  /**
    * The context name of the item.
    */
   context?: string;

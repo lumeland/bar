@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.1.7] - Unreleased
+### Added
+- Allow to place icons in the item title.
+
 ### Fixed
 - Use tabular numbers.
 - Position sticky of the items.
