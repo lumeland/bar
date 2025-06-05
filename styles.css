@@ -311,6 +311,7 @@ summary.item-title {
   position: relative;
   transition-property: color, background-color, border-color;
   transition-duration: var(--transition);
+  cursor: pointer;
 
   &:hover:not([aria-pressed="true"]) {
     background-color: var(--color-highlight);
@@ -321,6 +322,7 @@ summary.item-title {
   &[aria-pressed="true"] {
     background-color: var(--color-line);
     color: transparent;
+    cursor: default;
   }
 }
 
