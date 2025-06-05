@@ -44,7 +44,6 @@
 }
 
 :host(.is-closed) {
-  pointer-events: initial;
   opacity: 0;
 
   .bar {
@@ -63,6 +62,11 @@
     }
   }
 }
+
+:host(.is-closed.is-hovered) {
+  opacity: 1;
+}
+
 :host(.is-closed.is-animated) {
   animation-name: hide;
   animation-duration: var(--transition);
@@ -320,14 +324,15 @@ summary.item-title {
   }
 
   &[aria-pressed="true"] {
-    background-color: var(--color-line);
+    background-color: transparent;
     color: transparent;
+    border-color: transparent;
     cursor: default;
   }
 }
 
 .loader {
-  --size: 10px;
+  --size: 8px;
   --color: white;
   --color-trans: color-mix(in srgb, var(--color) 15%, transparent);
 

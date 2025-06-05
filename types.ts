@@ -60,6 +60,12 @@ export interface ItemContext {
 
 export interface Item {
   /**
+   * The unique identifier of the item
+   * It's calculated automatically if not provided
+   */
+  id?: string;
+
+  /**
    * The title of the item
    */
   title: string;
