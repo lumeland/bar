@@ -361,11 +361,16 @@ export default class Bar extends HTMLElement {
       onclick: action.data && !action.onclick
         ? (ev) => {
           ev.preventDefault();
-          if (this.websocket) {
+          if (
+            this.websocket && button.getAttribute("aria-pressed") !== "true"
+          ) {
             this.websocket.send(JSON.stringify({
               item,
               data: button.dataset,
             }));
+            this.state.set("open_item", item.id);
+            button.appendChild(dom("span", { class: "loader" }));
+            button.setAttribute("aria-pressed", "true");
           }
         }
         : action.onclick,

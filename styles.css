@@ -100,7 +100,6 @@ lume-icon {
   background-color: red;
   background-color: var(--color-background);
   color: var(--color-text);
-  box-shadow: 0 0 0 1px black;
   box-sizing: border-box;
   font-family: var(--font-family-ui);
   font-size: 14px;
@@ -309,10 +308,58 @@ summary.item-title {
   border-radius: var(--border-radius);
   border: solid 1px var(--color-line);
   background-color: var(--color-background);
+  position: relative;
+  transition-property: color, background-color, border-color;
+  transition-duration: var(--transition);
 
-  &:hover {
+  &:hover:not([aria-pressed="true"]) {
     background-color: var(--color-highlight);
     color: var(--color-base);
     border-color: var(--color-dim);
+  }
+
+  &[aria-pressed="true"] {
+    background-color: var(--color-line);
+    color: transparent;
+  }
+}
+
+.loader {
+  --size: 10px;
+  --color: white;
+  --color-trans: color-mix(in srgb, var(--color) 15%, transparent);
+
+  width: var(--size);
+  height: var(--size);
+  border-radius: var(--border-radius);
+  background-color: var(--color);
+  box-shadow:
+    calc(var(--size) * 1.5) 0 var(--color),
+    calc(var(--size) * -1.5) 0 var(--color);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(var(--size) / -2), calc(var(--size) / -2));
+  animation: loader 0.5s ease-out infinite alternate;
+}
+
+@keyframes loader {
+  0% {
+    background-color: var(--color-trans);
+    box-shadow:
+      calc(var(--size) * 1.5) 0 var(--color-trans),
+      calc(var(--size) * -1.5) 0 var(--color);
+  }
+  50% {
+    background-color: var(--color);
+    box-shadow:
+      calc(var(--size) * 1.5) 0 var(--color-trans),
+      calc(var(--size) * -1.5) 0 var(--color-trans);
+  }
+  100% {
+    background-color: var(--color-trans);
+    box-shadow:
+      calc(var(--size) * 1.5) 0 var(--color),
+      calc(var(--size) * -1.5) 0 var(--color-trans);
   }
 }

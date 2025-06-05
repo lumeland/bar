@@ -129,7 +129,6 @@ export interface Action {
 
   /**
    * Data to pass to send a message to the background script
-   * This is used to send messages to the background script
    */
-  data: Record<string, string | number | boolean>;
+  data?: Record<string, string | number | boolean>;
 }
