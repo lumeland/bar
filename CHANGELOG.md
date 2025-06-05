@@ -10,6 +10,9 @@ project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - Allow to place icons in the item title.
 
+### Changed
+- Show automatically the first tab on open.
+
 ### Fixed
 - Use tabular numbers.
 - Position sticky of the items.

@@ -150,6 +150,12 @@ export default class Bar extends HTMLElement {
     this.#trackMouse(false);
     this.state.set("open", true);
     this.classList.remove("is-closed");
+
+    // Open the first tab if no active collection is set
+    const pressedTab = this.tabs.querySelector("button[aria-pressed='true']");
+    if (!pressedTab) {
+      this.tabs.querySelector("button")?.click();
+    }
   }
 
   addCollection(collection) {
