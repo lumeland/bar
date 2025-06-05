@@ -259,8 +259,6 @@ lume-icon {
   box-sizing: border-box;
   word-break: break-all;
   padding-right: 8px;
-  position: sticky;
-  top: calc(var(--level) * 40px);
 
   code {
     font-family: var(--font-family-code);
@@ -278,6 +276,8 @@ lume-icon {
 summary.item-title {
   list-style: none;
   cursor: pointer;
+  position: sticky;
+  top: calc(var(--level) * 40px);
 
   &::-webkit-details-marker {
     display: none;
