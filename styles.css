@@ -186,6 +186,10 @@ lume-icon {
   padding: 0;
   --level: 0;
 
+  > li {
+    margin-top: 1px;
+  }
+
   > li:hover:has(details),
   > li:has(> details[open]) {
     outline: solid 1px var(--color-line);
@@ -262,7 +266,7 @@ lume-icon {
   min-height: 40px;
   box-sizing: border-box;
   word-break: break-all;
-  padding-right: 8px;
+  margin-right: 8px;
 }
 .item-title-content {
   flex: 1 1 auto;
