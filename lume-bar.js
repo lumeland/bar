@@ -208,7 +208,7 @@ export default class Bar extends HTMLElement {
     };
 
     button.addEventListener("click", () => {
-      this.state.remove("open_item");
+      this.state.remove("current_item");
       onclick();
     });
 
@@ -216,10 +216,12 @@ export default class Bar extends HTMLElement {
 
     if (this.state.get("active_collection") === collection.name) {
       onclick();
-      const openItem = this.state.get("open_item");
+      const currentItem = this.state.get("current_item");
 
-      if (openItem) {
-        const target = this.details.querySelector(`#${openItem}`);
+      if (currentItem) {
+        const [itemId, isOpen] = currentItem;
+
+        const target = this.details.querySelector(`#${itemId}`);
 
         if (target) {
           let item = target?.closest("details");
@@ -233,7 +235,7 @@ export default class Bar extends HTMLElement {
           items.reverse().forEach((item) => item.open = true);
 
           if (target.firstElementChild?.tagName === "DETAILS") {
-            target.firstElementChild.open = true;
+            target.firstElementChild.open = isOpen;
           }
 
           target.scrollIntoView();
@@ -255,11 +257,11 @@ export default class Bar extends HTMLElement {
 
     if (item.text || item.code || item.items?.length) {
       dom("details", {
-        ontoggle: () => {
+        ontoggle: (ev) => {
           if (item.id) {
-            this.state.set("open_item", item.id);
+            this.state.set("current_item", [item.id, ev.target.open]);
           } else {
-            this.state.remove("open_item");
+            this.state.remove("current_item");
           }
         },
         html: [
@@ -379,7 +381,7 @@ export default class Bar extends HTMLElement {
               item,
               data: button.dataset,
             }));
-            this.state.set("open_item", item.id);
+            this.state.set("current_item", [item.id, true]);
             button.appendChild(dom("span", { class: "loader" }));
             button.setAttribute("aria-pressed", "true");
           }
