@@ -16,7 +16,7 @@
       "items": [
         {
           "context": "info",
-          "title": "This is the message title",
+          "title": "This is the message title <a href='#'>with a link</a>",
           "icon": "x",
           "code": "code",
           "details": "2.4s"

@@ -20,8 +20,10 @@
   --gap: 8px;
   --transition: 200ms;
 
+  all: initial;
   margin: 0;
   padding: 0;
+  position: fixed;
   inset: auto auto 0 50%;
   background: none;
   transform: translateX(-50%);
@@ -110,7 +112,6 @@ lume-icon {
   color: var(--color-text);
   box-sizing: border-box;
   font-family: var(--font-family-ui);
-  text-align: left;
   font-size: 14px;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
   overflow: hidden;
@@ -287,6 +288,16 @@ lume-icon {
   .badge {
     color: var(--color-text);
     background-color: var(--color-line);
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--color-primary-highlight);
+      text-decoration: underline;
+    }
   }
 }
 summary.item-title {
