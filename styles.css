@@ -36,6 +36,7 @@
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
   border: none;
+  transition: opacity 200ms;
 
   @media (max-width: 600px) {
     width: min(600px - 40px, 100%);

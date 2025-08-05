@@ -49,7 +49,7 @@ class State {
  * It fetches data from a JSON file and displays it in a structured format.
  */
 export default class Bar extends HTMLElement {
-  #mouseEventListener;
+  #trackingMouse;
 
   constructor() {
     super();
@@ -95,14 +95,6 @@ export default class Bar extends HTMLElement {
         }
       },
     }, this.controls);
-
-    this.#mouseEventListener = (ev) => {
-      if (ev.clientY > innerHeight - 100 && ev.clientX < 200) {
-        this.classList.add("is-hovered");
-      } else {
-        this.classList.remove("is-hovered");
-      }
-    };
   }
 
   connectedCallback() {
@@ -115,14 +107,6 @@ export default class Bar extends HTMLElement {
     // Ensure the bar is always on top of other elements
     this.setAttribute("popover", "manual");
     this.showPopover();
-  }
-
-  #trackMouse(enabled = true) {
-    if (enabled) {
-      document.addEventListener("mousemove", this.#mouseEventListener);
-    } else {
-      document.removeEventListener("mousemove", this.#mouseEventListener);
-    }
   }
 
   async update(data) {
@@ -143,13 +127,24 @@ export default class Bar extends HTMLElement {
   }
 
   close() {
-    this.#trackMouse(true);
     this.state.set("open", false);
     this.classList.add("is-closed");
+
+    let timeout;
+    this.#trackingMouse = new AbortController();
+    document.addEventListener("mousemove", (ev) => {
+      if (ev.clientY > innerHeight - 80) {
+        this.classList.add("is-hovered");
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          this.classList.remove("is-hovered");
+        }, 500);
+      }
+    }, { signal: this.#trackingMouse.signal });
   }
 
   open() {
-    this.#trackMouse(false);
+    this.#trackingMouse?.abort();
     this.state.set("open", true);
     this.classList.remove("is-closed");
 
