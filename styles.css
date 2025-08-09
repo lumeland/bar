@@ -379,7 +379,7 @@ summary.item-title {
 
 /** Inline fmt elements */
 red {
-  color: var(--color-red);
+  color: var(--color-error);
 }
 gray {
   color: var(--color-dim);
