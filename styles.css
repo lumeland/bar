@@ -377,6 +377,23 @@ summary.item-title {
   }
 }
 
+/** Inline fmt elements */
+red {
+  color: var(--color-red);
+}
+gray {
+  color: var(--color-dim);
+}
+yellow {
+  color: var(--color-warning);
+}
+green {
+  color: var(--color-success);
+}
+blue {
+  color: var(--color-info);
+}
+
 .loader {
   --size: 8px;
   --color: white;
