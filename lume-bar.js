@@ -1,4 +1,4 @@
-import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.9/dom.js";
+import dom from "https://cdn.jsdelivr.net/gh/oscarotero/dom@0.1.10/dom.js";
 
 const styles = await (await fetch(import.meta.resolve("./styles.css"))).text();
 
@@ -300,6 +300,7 @@ export default class Bar extends HTMLElement {
         ],
       }, li);
     } else {
+      console.log(extractBadge(item.title, item.icon));
       dom("div", {
         class: "item-title",
         html: [

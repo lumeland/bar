@@ -2,5 +2,10 @@
   "lock": false,
   "tasks": {
     "dev": "deno serve --watch --allow-read demo/server.ts"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-import-prefix"]
+    }
   }
 }

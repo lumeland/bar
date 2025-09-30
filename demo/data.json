@@ -39,7 +39,21 @@
                   "code": "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong code"
                 },
                 {
-                  "title": "This page is editable",
+                  "title": "This page is <strong>editable</strong> &lt;strong&gt;Hello world&lt;/strong&gt;",
+                  "details": "2.4s",
+                  "actions": [
+                    {
+                      "text": "Edit",
+                      "href": "https://lume.land"
+                    },
+                    {
+                      "text": "Alert",
+                      "onclick": "alert('It works!')"
+                    }
+                  ]
+                },
+                {
+                  "title": "This page is &lt;strong&gt;Hello world&lt;/strong&gt;",
                   "details": "2.4s",
                   "actions": [
                     {
