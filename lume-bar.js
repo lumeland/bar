@@ -4,11 +4,11 @@ const styles = await (await fetch(import.meta.resolve("./styles.css"))).text();
 
 // Default colors for different contexts
 const colors = new Map([
-  ["error", "var(--color-error)"],
-  ["warning", "var(--color-warning)"],
-  ["success", "var(--color-success)"],
-  ["info", "var(--color-info)"],
-  ["important", "var(--color-important)"],
+  ["error", "var(--db-color-error)"],
+  ["warning", "var(--db-color-warning)"],
+  ["success", "var(--db-color-success)"],
+  ["info", "var(--db-color-info)"],
+  ["important", "var(--db-color-important)"],
 ]);
 
 /**
@@ -245,8 +245,8 @@ export default class Bar extends HTMLElement {
     const li = dom("li", {
       class: "item",
       id: item.id,
-      "--color-context": item.context
-        ? getColor(contexts?.[item.context]?.background, "var(--color-dim)")
+      "--db-color-context": item.context
+        ? getColor(contexts?.[item.context]?.background, "var(--db-color-dim)")
         : undefined,
     });
 
@@ -346,10 +346,10 @@ export default class Bar extends HTMLElement {
 
     return dom("span", {
       class: "badge",
-      "--background": background
+      "--db-background": background
         ? colors.get(background) ?? background
-        : "var(--color-dim)",
-      "--color": getColor(color, "var(--color-background)"),
+        : "var(--db-color-dim)",
+      "--db-color": getColor(color, "var(--db-color-background)"),
       html: [
         context.icon ? dom("lume-icon", { name: context.icon }) : "",
         context.title ?? item.context,
