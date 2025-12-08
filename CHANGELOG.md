@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.14] - 2025-12-08
+### Fixed
+- Removed a `console.log()`.
+- Updated `dom` to the latest version.
+
 ## [0.1.13] - 2025-10-28
 ### Fixed
 - Added the `db-` prefix to all CSS variables to prevent conflicts with other variables used by the site.
@@ -88,6 +93,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 ## [0.1.0] - 2025-05-06
 First version
 
+[0.1.14]: https://github.com/lumeland/bar/compare/v0.1.13...v0.1.14
 [0.1.13]: https://github.com/lumeland/bar/compare/v0.1.12...v0.1.13
 [0.1.12]: https://github.com/lumeland/bar/compare/v0.1.11...v0.1.12
 [0.1.11]: https://github.com/lumeland/bar/compare/v0.1.10...v0.1.11
